@@ -1,6 +1,3 @@
-require 'initializer' unless defined? ::Rails::Initializer 
-require 'action_controller/dispatcher' unless defined? ::ActionController::Dispatcher
-
 module HasManyPolymorphs
 
 =begin rdoc    
@@ -11,16 +8,16 @@ Note that you can override DEFAULT_OPTIONS via Rails::Configuration#has_many_pol
     # your other configuration here
     
     config.after_initialize do
-      config.has_many_polymorphs_options['requirements'] << 'lib/my_extension'
+      config.has_many_polymorphs.options['requirements'] << 'lib/my_extension'
     end    
   end
   
 =end
   
-  MODELS_ROOT = "#{RAILS_ROOT}/app/models/"
+  MODELS_ROOT = Rails.root.join('app', 'models')
   
   DEFAULT_OPTIONS = {
-    :file_pattern => "#{MODELS_ROOT}**/*.rb",
+    :file_pattern => "#{MODELS_ROOT}/**/*.rb",
     :file_exclusions => ['svn', 'CVS', 'bzr'],
     :methods => ['has_many_polymorphs', 'acts_as_double_polymorphic_join'],
     :requirements => []}
@@ -28,9 +25,8 @@ Note that you can override DEFAULT_OPTIONS via Rails::Configuration#has_many_pol
   mattr_accessor :options
   @@options = HashWithIndifferentAccess.new(DEFAULT_OPTIONS)      
 
-  
   # Dispatcher callback to load polymorphic relationships from the top down.
-  def self.autoload
+  def self.setup
 
     _logger_debug "autoload hook invoked"
     
@@ -44,31 +40,16 @@ Note that you can override DEFAULT_OPTIONS via Rails::Configuration#has_many_pol
       open(filename) do |file|
         if file.grep(/#{options[:methods].join("|")}/).any?
           begin
-            modelname = filename[0..-4]
-            modelname.slice!(MODELS_ROOT)
+            modelname = File.basename(filename, '.rb')
             model = modelname.camelize
             _logger_warn "preloading parent model #{model}"
             model.constantize
           rescue Object => e
-            _logger_warn "#{model} could not be preloaded: #{e.inspect}"
+            _logger_warn "#{model} could not be preloaded: #{e.inspect} #{e.backtrace}"
           end
         end
       end
     end
   end  
     
-end
-
-class Rails::Initializer #:nodoc:
-  # Make sure it gets loaded in the console, tests, and migrations
-  def after_initialize_with_autoload 
-    after_initialize_without_autoload
-    HasManyPolymorphs.autoload
-  end
-  alias_method_chain :after_initialize, :autoload 
-end
-
-ActionController::Dispatcher.to_prepare(:has_many_polymorphs_autoload) do
-  # Make sure it gets loaded in the app
-  HasManyPolymorphs.autoload
 end

@@ -1,5 +1,14 @@
 Has_many_polymorphs
 
+This is a hacky attempt to port has_many_polymorphs to work under Rails 3. It is intended solely
+for my use (and use as a gem) but is offered here in case it helps anyone else develop it into
+a more complete port.
+
+James Stewart - 3rd May 2010
+
+
+== Original README
+
 An ActiveRecord plugin for self-referential and double-sided polymorphic associations.
 
 == License

@@ -1,4 +1,4 @@
-require 'active_record/all'
+require 'active_record'
 require 'has_many_polymorphs/reflection'
 require 'has_many_polymorphs/association'
 require 'has_many_polymorphs/class_methods'
@@ -15,7 +15,5 @@ if ENV['HMP_DEBUG'] || (Rails.env.development? || Rails.env.test?) && ENV['USER'
 end
 
 require 'has_many_polymorphs/railtie'
-
-_logger_debug Rails.root
 
 _logger_debug "loaded ok"

@@ -16,4 +16,6 @@ end
 
 require 'has_many_polymorphs/railtie'
 
+_logger_debug Rails.root
+
 _logger_debug "loaded ok"

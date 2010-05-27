@@ -40,7 +40,8 @@ Note that you can override DEFAULT_OPTIONS via Rails::Configuration#has_many_pol
       open(filename) do |file|
         if file.grep(/#{options[:methods].join("|")}/).any?
           begin
-            modelname = File.basename(filename, '.rb')
+            # determines the modelname by the directory - this allows the autoload of namespaced models
+            modelname = filename[0..-4].gsub("#{MODELS_ROOT.to_s}/", "")
             model = modelname.camelize
             _logger_warn "preloading parent model #{model}"
             model.constantize

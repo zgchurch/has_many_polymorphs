@@ -135,7 +135,9 @@ These options are passed through to targets on both sides of the association. If
               end                         
             else
               unless parent_class.instance_methods.include?(join_name)
-                parent_class.send(:alias_method, join_name, "#{join_name}_as_#{singular_reverse_association_id}")
+                # ensure there are no forward slashes in the aliased join_name_method (occurs when namespaces are used)
+                join_name_method = join_name.to_s.gsub('/', '_').to_sym
+                parent_class.send(:alias_method, join_name_method, "#{join_name_method}_as_#{singular_reverse_association_id}")
               end
             end                      
   

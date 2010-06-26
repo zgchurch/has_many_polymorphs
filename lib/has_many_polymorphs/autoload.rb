@@ -1,3 +1,5 @@
+require "#{Rails.root}/config/initializers/inflections"
+
 module HasManyPolymorphs
 
 =begin rdoc    
